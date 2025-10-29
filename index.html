@@ -20,8 +20,8 @@
         <button id="btnTerm" class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 px-4 rounded">Lookup Term</button>
       </div>
       <div class="mb-4 flex flex-col md:flex-row gap-2">
-        <input id="queryInput" type="text" placeholder="Enter query (e.g. amygdala not emotion)" class="border rounded px-3 py-2 flex-1" />
-        <button id="btnQuery" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">Logical Search</button>
+  <input id="queryInput" type="text" placeholder="Enter term (e.g. amygdala)" class="border rounded px-3 py-2 flex-1" />
+  <button id="btnQuery" class="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded">Search Studies</button>
       </div>
       <pre id="out" class="bg-gray-100 rounded p-4 text-sm overflow-x-auto">Loading...</pre>
     </div>
@@ -41,7 +41,7 @@
       const out = document.getElementById('out');
       out.textContent = 'Requesting...';
       try {
-        const resp = await fetch('https://mil.psy.ntu.edu.tw:5000/terms');
+        const resp = await fetch('https://hpc.psy.ntu.edu.tw:5000/terms');
         let info = `HTTP ${resp.status} ${resp.statusText}\n`;
         const ct = resp.headers.get('content-type') || '';
         if (!resp.ok) {
@@ -76,7 +76,7 @@
       }
       out.textContent = 'Requesting...';
       try {
-        const resp = await fetch(`https://mil.psy.ntu.edu.tw:5000/terms/${encodeURIComponent(term)}`);
+        const resp = await fetch(`https://hpc.psy.ntu.edu.tw:5000/terms/${encodeURIComponent(term)}`);
         let info = `HTTP ${resp.status} ${resp.statusText}\n`;
         const ct = resp.headers.get('content-type') || '';
         if (!resp.ok) {
@@ -102,14 +102,14 @@
 
     async function fetchQueryStudies() {
       const out = document.getElementById('out');
-      const query = document.getElementById('queryInput').value.trim();
-      if (!query) {
-        out.innerHTML = `<span class='text-red-600'>Please enter a query string.</span>`;
+      const term = document.getElementById('queryInput').value.trim();  
+      if (!term) {
+        out.innerHTML = `<span class='text-red-600'>Please enter a term.</span>`;
         return;
       }
       out.textContent = 'Requesting...';
       try {
-        const resp = await fetch(`https://mil.psy.ntu.edu.tw:5000/query/${encodeURIComponent(query)}/studies`);
+        const resp = await fetch(`https://hpc.psy.ntu.edu.tw:5000/query/${term}/studies`);
         let info = `HTTP ${resp.status} ${resp.statusText}\n`;
         const ct = resp.headers.get('content-type') || '';
         if (!resp.ok) {
@@ -120,7 +120,7 @@
         if (ct.includes('application/json')) {
           const data = await resp.json();
           if (Array.isArray(data)) {
-            out.innerHTML = renderList(`Studies for "${query}"`, data);
+            out.innerHTML = renderList(`Studies for "${term}"`, data);
           } else {
             out.innerHTML = `<span class='text-green-700'>${info}</span><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
           }
